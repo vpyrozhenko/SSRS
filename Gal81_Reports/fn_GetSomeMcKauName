@@ -1,0 +1,39 @@
+USE [gal81]
+GO
+/****** Object:  UserDefinedFunction [dbo].[fn_GetSomeMcKauName]    Script Date: 02/01/2013 11:39:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:  	<Valerij,Pyrozhenko>
+-- Create date: <27.11.2012>
+-- Description:	<Function return spkauname for mc by NRec and KodGrKau,>
+-- =============================================
+ALTER FUNCTION [dbo].[fn_GetSomeMcKauName] (@McNRec AS BINARY(8), @KodGrKau AS INT)
+RETURNS VARCHAR(80)
+AS 
+BEGIN
+  DECLARE @RESULT AS VARCHAR(80)
+  SET @RESULT = ''
+  
+  SELECT
+        @RESULT = T$SPKAU.F$NAME
+  FROM T$KATMC INNER JOIN T$HASHAN ON T$KATMC.F$CHASHAN = T$HASHAN.F$NREC
+                INNER JOIN T$SPSLOJ ON (T$HASHAN.F$CSLOJ = T$SPSLOJ.F$CMAIN AND @KodGrKau = T$SPSLOJ.F$KODGRKAU)
+                INNER JOIN T$SPKAU ON 
+                     CASE
+                       WHEN T$SPSLOJ.F$NPP = 1  THEN T$HASHAN.F$CANALIT#1#
+                       WHEN T$SPSLOJ.F$NPP = 2  THEN T$HASHAN.F$CANALIT#2#
+                       WHEN T$SPSLOJ.F$NPP = 3  THEN T$HASHAN.F$CANALIT#3#
+                       WHEN T$SPSLOJ.F$NPP = 4  THEN T$HASHAN.F$CANALIT#4#
+                       WHEN T$SPSLOJ.F$NPP = 5  THEN T$HASHAN.F$CANALIT#5#
+                       WHEN T$SPSLOJ.F$NPP = 6  THEN T$HASHAN.F$CANALIT#6#
+                       WHEN T$SPSLOJ.F$NPP = 7  THEN T$HASHAN.F$CANALIT#7#
+                       WHEN T$SPSLOJ.F$NPP = 8  THEN T$HASHAN.F$CANALIT#8#
+                       WHEN T$SPSLOJ.F$NPP = 9  THEN T$HASHAN.F$CANALIT#9#
+                       WHEN T$SPSLOJ.F$NPP = 10  THEN T$HASHAN.F$CANALIT#10#
+                     END = T$SPKAU.F$NREC 
+   WHERE (T$KATMC.F$NREC = @McNRec)
+   RETURN @RESULT
+END
